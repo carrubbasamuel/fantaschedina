@@ -91,6 +91,18 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Fantaschedine API is running!', 
     version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    port: process.env.PORT,
+    mongoConnected: mongoose.connection.readyState === 1,
+    corsOrigin: req.headers.origin || 'no-origin'
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    mongoConnected: mongoose.connection.readyState === 1,
     timestamp: new Date().toISOString()
   });
 });
