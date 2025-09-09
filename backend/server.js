@@ -3,6 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// Debug environment variables
+console.log('🔍 Environment check:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+
 const app = express();
 
 // CORS configuration
@@ -33,13 +40,26 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connesso'))
-.catch((err) => console.error('Errore connessione MongoDB:', err));
+// Database connection with retry logic
+const connectDB = async () => {
+  try {
+    console.log('Tentativo connessione MongoDB...');
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+    });
+    console.log('MongoDB connesso con successo');
+  } catch (error) {
+    console.error('Errore connessione MongoDB:', error.message);
+    console.error('URI utilizzato:', process.env.MONGODB_URI ? 'URI presente' : 'URI mancante');
+    // Retry dopo 5 secondi
+    setTimeout(connectDB, 5000);
+  }
+};
+
+connectDB();
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
