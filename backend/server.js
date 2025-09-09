@@ -7,13 +7,24 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? [
-        'https://fantaschedina.netlify.app', 
-        'https://fantastic-semifreddo-123456.netlify.app', // Netlify auto-generated URL
-        'https://carrubbasamuel.github.io' // GitHub Pages backup
-      ]
-    : ['http://localhost:3000'],
+  origin: function (origin, callback) {
+    // Permetti richieste senza origin (es. app mobile)
+    if (!origin) return callback(null, true);
+    
+    // In development permetti localhost
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // In production permetti domini specifici o netlify
+    if (origin.includes('netlify.app') || 
+        origin.includes('fantaschedina.netlify.app') ||
+        origin.includes('carrubbasamuel.github.io')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Non autorizzato da CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };
