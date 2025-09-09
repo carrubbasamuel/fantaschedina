@@ -5,8 +5,17 @@ require('dotenv').config();
 
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://fantaschedina.netlify.app', 'https://fantaschedina.vercel.app']
+    : ['http://localhost:3000'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Database connection
@@ -25,8 +34,23 @@ app.use('/api/matches', require('./routes/matches'));
 app.use('/api/bets', require('./routes/bets'));
 app.use('/api/gamedays', require('./routes/gamedays'));
 
-const PORT = process.env.PORT || 5000;
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Fantaschedine API is running!', 
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
 
-app.listen(PORT, () => {
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server avviato sulla porta ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
