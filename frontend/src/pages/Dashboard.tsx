@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Alert, Button, Spinner } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, Card, Col, Container, Row, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { gamedaysAPI, betsAPI } from '../services/api';
-import { GamedayWithMatches, Bet } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { betsAPI, gamedaysAPI } from '../services/api';
+import { Bet, GamedayWithMatches } from '../types';
 
 const Dashboard: React.FC = () => {
   const [activeGameday, setActiveGameday] = useState<GamedayWithMatches | null>(null);

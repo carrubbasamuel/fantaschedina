@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, Card, Col, Container, Form, Row, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { gamedaysAPI, betsAPI } from '../services/api';
+import { betsAPI, gamedaysAPI } from '../services/api';
 import { GamedayWithMatches, Prediction } from '../types';
 
 const NewBet: React.FC = () => {

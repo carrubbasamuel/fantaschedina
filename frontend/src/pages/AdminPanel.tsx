@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Alert, Spinner, Modal, Form } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, Card, Col, Container, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
 import { adminAPI } from '../services/api';
-import { User, Team } from '../types';
+import { Team, User } from '../types';
 
 const AdminPanel: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);

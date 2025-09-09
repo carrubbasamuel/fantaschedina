@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, Team, Gameday, Match, Bet, LeaderboardEntry, GamedayWithMatches, Prediction } from '../types';
+import { Bet, Gameday, GamedayWithMatches, LeaderboardEntry, Match, Prediction, Team, User } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 

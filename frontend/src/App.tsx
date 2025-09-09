@@ -1,16 +1,16 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Navigation from './components/Navigation';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import NewBet from './pages/NewBet';
-import Leaderboard from './pages/Leaderboard';
-import MyBets from './pages/MyBets';
-import AdminPanel from './pages/AdminPanel';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import AdminPanel from './pages/AdminPanel';
+import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
+import Leaderboard from './pages/Leaderboard';
+import Login from './pages/Login';
+import MyBets from './pages/MyBets';
+import NewBet from './pages/NewBet';
+import Register from './pages/Register';
 
 // Componente per proteggere le route
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
