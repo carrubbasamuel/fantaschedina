@@ -26,6 +26,7 @@ export interface Gameday {
   endDate: string;
   isActive: boolean;
   isCompleted: boolean;
+  bettingClosed: boolean;
   createdAt: string;
 }
 

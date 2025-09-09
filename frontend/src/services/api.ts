@@ -78,12 +78,22 @@ export const gamedaysAPI = {
     const response = await api.post('/gamedays/initialize-season');
     return response.data;
   },
+
+  closeBetting: async (id: string): Promise<Gameday> => {
+    const response = await api.put(`/gamedays/${id}/close-betting`);
+    return response.data;
+  },
 };
 
 // Matches API
 export const matchesAPI = {
   getByGameday: async (gamedayId: string): Promise<Match[]> => {
     const response = await api.get(`/matches/gameday/${gamedayId}`);
+    return response.data;
+  },
+
+  create: async (matchData: { gamedayId: string; homeTeam: string; awayTeam: string; matchNumber: number }): Promise<Match> => {
+    const response = await api.post('/matches', matchData);
     return response.data;
   },
 

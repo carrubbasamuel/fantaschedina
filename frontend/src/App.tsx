@@ -12,6 +12,7 @@ import MyBets from './pages/MyBets';
 import NewBet from './pages/NewBet';
 import Register from './pages/Register';
 import Schedule from './pages/Schedule';
+import GamedayManagement from './pages/GamedayManagement';
 
 // Componente per proteggere le route
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -123,6 +124,14 @@ function App() {
               element={
                 <AdminRoute>
                   <AdminPanel />
+                </AdminRoute>
+              } 
+            />
+            <Route 
+              path="/gameday-management" 
+              element={
+                <AdminRoute>
+                  <GamedayManagement />
                 </AdminRoute>
               } 
             />

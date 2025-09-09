@@ -57,14 +57,24 @@ const Navigation: React.FC = () => {
                   Le Mie Schedine
                 </Nav.Link>
                 {user?.isAdmin && (
-                  <Nav.Link 
-                    as={Link} 
-                    to="/admin"
-                    className={isActive('/admin') ? 'active' : ''}
-                    style={{ color: '#ffc107' }}
-                  >
-                    🔧 Pannello Admin
-                  </Nav.Link>
+                  <>
+                    <Nav.Link 
+                      as={Link} 
+                      to="/admin"
+                      className={isActive('/admin') ? 'active' : ''}
+                      style={{ color: '#ffc107' }}
+                    >
+                      🔧 Pannello Admin
+                    </Nav.Link>
+                    <Nav.Link 
+                      as={Link} 
+                      to="/gameday-management"
+                      className={isActive('/gameday-management') ? 'active' : ''}
+                      style={{ color: '#ffc107' }}
+                    >
+                      ⚽ Gestione Giornate
+                    </Nav.Link>
+                  </>
                 )}
               </>
             )}
