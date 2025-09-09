@@ -44,6 +44,13 @@ const Navigation: React.FC = () => {
                 </Nav.Link>
                 <Nav.Link 
                   as={Link} 
+                  to="/schedule"
+                  className={isActive('/schedule') ? 'active' : ''}
+                >
+                  📅 Calendario
+                </Nav.Link>
+                <Nav.Link 
+                  as={Link} 
                   to="/my-bets"
                   className={isActive('/my-bets') ? 'active' : ''}
                 >

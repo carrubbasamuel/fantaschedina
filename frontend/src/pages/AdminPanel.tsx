@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Card, Col, Container, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import { adminAPI } from '../services/api';
+import { adminAPI, gamedaysAPI } from '../services/api';
 import { Team, User } from '../types';
 
 const AdminPanel: React.FC = () => {
@@ -11,6 +11,7 @@ const AdminPanel: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedTeam, setSelectedTeam] = useState('');
+  const [seasonInitialized, setSeasonInitialized] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -25,8 +26,34 @@ const AdminPanel: React.FC = () => {
       ]);
       setUsers(usersData);
       setAvailableTeams(teamsData);
+      
+      // Controlla se le giornate sono già inizializzate
+      try {
+        const gamedays = await gamedaysAPI.getAll();
+        setSeasonInitialized(gamedays.length > 0);
+      } catch (error) {
+        setSeasonInitialized(false);
+      }
     } catch (error: any) {
       setError(error.response?.data?.message || 'Errore nel caricamento dei dati');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInitializeSeason = async () => {
+    if (!window.confirm('Sei sicuro di voler inizializzare tutte le 35 giornate del campionato? Questa operazione può essere fatta solo una volta.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await gamedaysAPI.initializeSeason();
+      setSeasonInitialized(true);
+      setError('');
+      alert(`Successo! ${result.message}`);
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Errore nell\'inizializzazione del campionato');
     } finally {
       setLoading(false);
     }
@@ -104,6 +131,34 @@ const AdminPanel: React.FC = () => {
             </Card.Header>
             <Card.Body>
               {error && <Alert variant="danger">{error}</Alert>}
+              
+              {/* Sezione Azioni Amministrative */}
+              <Card className="mb-4">
+                <Card.Header>
+                  <h5>🎯 Azioni Amministrative</h5>
+                </Card.Header>
+                <Card.Body>
+                  <Row>
+                    <Col md={6}>
+                      <div className="d-grid">
+                        <Button 
+                          variant={seasonInitialized ? "success" : "primary"}
+                          disabled={seasonInitialized || loading}
+                          onClick={handleInitializeSeason}
+                        >
+                          {seasonInitialized ? "✅ Campionato Inizializzato" : "🏆 Inizializza Campionato (35 giornate)"}
+                        </Button>
+                        <small className="text-muted mt-1">
+                          {seasonInitialized 
+                            ? "Tutte le giornate sono state create con successo" 
+                            : "Crea tutte le 35 giornate dalla 3ª alla 38ª di Serie A"
+                          }
+                        </small>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
               
               <div className="mb-3">
                 <h6>Squadre disponibili: {availableTeams.length}/8</h6>

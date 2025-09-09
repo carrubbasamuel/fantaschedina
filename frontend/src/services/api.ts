@@ -73,6 +73,11 @@ export const gamedaysAPI = {
     const response = await api.put(`/gamedays/${id}/activate`);
     return response.data;
   },
+
+  initializeSeason: async (): Promise<{ message: string; gamedays: Gameday[] }> => {
+    const response = await api.post('/gamedays/initialize-season');
+    return response.data;
+  },
 };
 
 // Matches API
