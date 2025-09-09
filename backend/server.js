@@ -8,7 +8,11 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://fantaschedina.netlify.app', 'https://fantaschedina.vercel.app']
+    ? [
+        'https://fantaschedina.netlify.app', 
+        'https://fantastic-semifreddo-123456.netlify.app', // Netlify auto-generated URL
+        'https://carrubbasamuel.github.io' // GitHub Pages backup
+      ]
     : ['http://localhost:3000'],
   credentials: true,
   optionsSuccessStatus: 200
