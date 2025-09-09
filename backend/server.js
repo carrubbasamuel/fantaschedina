@@ -25,7 +25,7 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'set' : 'NOT SET');
 // Health check PRIMA di tutto
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'Fantaschedine API is working!',
+    message: 'Fantaschedine API is working! v2.0',
     timestamp: new Date().toISOString(),
     env: {
       NODE_ENV: process.env.NODE_ENV || 'not set',
@@ -40,6 +40,16 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok',
     mongoStatus: mongoose.connection.readyState,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Debug CORS
+app.get('/cors-test', (req, res) => {
+  res.json({ 
+    message: 'CORS test endpoint',
+    origin: req.headers.origin || 'no origin',
+    headers: req.headers,
     timestamp: new Date().toISOString()
   });
 });
