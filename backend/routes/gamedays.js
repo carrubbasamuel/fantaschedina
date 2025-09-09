@@ -143,6 +143,11 @@ router.post('/initialize-season', auth, async (req, res) => {
 // Attiva giornata
 router.put('/:id/activate', auth, async (req, res) => {
   try {
+    // Verifica se l'utente è admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Accesso negato' });
+    }
+
     // Disattiva tutte le giornate
     await Gameday.updateMany({}, { isActive: false });
 
@@ -150,6 +155,31 @@ router.put('/:id/activate', auth, async (req, res) => {
     const gameday = await Gameday.findByIdAndUpdate(
       req.params.id,
       { isActive: true },
+      { new: true }
+    );
+
+    if (!gameday) {
+      return res.status(404).json({ message: 'Giornata non trovata' });
+    }
+
+    res.json(gameday);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Errore del server' });
+  }
+});
+
+// Chiudi scommesse per una giornata
+router.put('/:id/close-betting', auth, async (req, res) => {
+  try {
+    // Verifica se l'utente è admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Accesso negato' });
+    }
+
+    const gameday = await Gameday.findByIdAndUpdate(
+      req.params.id,
+      { bettingClosed: true },
       { new: true }
     );
 
@@ -193,5 +223,30 @@ async function generateMatches(gamedayId) {
   await Match.insertMany(matches);
   return matches;
 }
+
+// Chiudi scommesse per una giornata
+router.put('/:id/close-betting', auth, async (req, res) => {
+  try {
+    // Verifica che l'utente sia admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Solo gli amministratori possono chiudere le scommesse' });
+    }
+
+    const gameday = await Gameday.findByIdAndUpdate(
+      req.params.id,
+      { bettingClosed: true },
+      { new: true }
+    );
+
+    if (!gameday) {
+      return res.status(404).json({ message: 'Giornata non trovata' });
+    }
+
+    res.json(gameday);
+  } catch (error) {
+    console.error('Errore nella chiusura delle scommesse:', error);
+    res.status(500).json({ message: 'Errore interno del server' });
+  }
+});
 
 module.exports = router;
