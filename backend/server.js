@@ -3,82 +3,65 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-// Debug environment variables
-console.log('🔍 Environment check:');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('PORT:', process.env.PORT);
-console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
-
 const app = express();
 
-// CORS configuration - Permissiva per Netlify
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log('🌐 CORS check for origin:', origin);
-    
-    // Permetti richieste senza origin (es. app mobile, Postman)
-    if (!origin) {
-      console.log('✅ No origin - allowing');
-      return callback(null, true);
-    }
-    
-    // In development permetti tutto
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('✅ Development mode - allowing all');
-      return callback(null, true);
-    }
-    
-    // In production permetti domini Netlify e GitHub
-    const allowedOrigins = [
-      'netlify.app',
-      'fantaschedina.netlify.app', 
-      'carrubbasamuel.github.io',
-      'localhost'
-    ];
-    
-    const isAllowed = allowedOrigins.some(domain => origin.includes(domain));
-    
-    if (isAllowed) {
-      console.log('✅ Origin allowed:', origin);
-      return callback(null, true);
-    }
-    
-    console.log('❌ Origin blocked:', origin);
-    callback(new Error('Non autorizzato da CORS'));
-  },
+// CORS molto permissivo per debugging
+app.use(cors({
+  origin: true, // Permetti tutto temporaneamente
   credentials: true,
-  optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
+}));
 
-// Middleware
-app.use(cors(corsOptions));
 app.use(express.json());
 
-// Database connection with retry logic
+// Debug info
+console.log('� Starting server...');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'not set');
+console.log('PORT:', process.env.PORT || 'not set');
+console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'set' : 'NOT SET');
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'set' : 'NOT SET');
+
+// Health check PRIMA di tutto
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Fantaschedine API is working!',
+    timestamp: new Date().toISOString(),
+    env: {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      PORT: process.env.PORT || 'not set',
+      MONGODB_URI: process.env.MONGODB_URI ? 'configured' : 'MISSING',
+      JWT_SECRET: process.env.JWT_SECRET ? 'configured' : 'MISSING'
+    }
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    mongoStatus: mongoose.connection.readyState,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Database connection
 const connectDB = async () => {
   try {
-    console.log('Tentativo connessione MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-    });
-    console.log('MongoDB connesso con successo');
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI not configured');
+    }
+    
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ MongoDB connected successfully');
   } catch (error) {
-    console.error('Errore connessione MongoDB:', error.message);
-    console.error('URI utilizzato:', process.env.MONGODB_URI ? 'URI presente' : 'URI mancante');
-    // Retry dopo 5 secondi
-    setTimeout(connectDB, 5000);
+    console.error('❌ MongoDB connection error:', error.message);
+    // Non fermare il server se MongoDB non funziona
   }
 };
 
 connectDB();
 
-// Routes
+// Routes - solo se MongoDB è connesso
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/teams', require('./routes/teams'));
@@ -86,35 +69,20 @@ app.use('/api/matches', require('./routes/matches'));
 app.use('/api/bets', require('./routes/bets'));
 app.use('/api/gamedays', require('./routes/gamedays'));
 
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Fantaschedine API is running!', 
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    port: process.env.PORT,
-    mongoConnected: mongoose.connection.readyState === 1,
-    corsOrigin: req.headers.origin || 'no-origin'
-  });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    mongoConnected: mongoose.connection.readyState === 1,
-    timestamp: new Date().toISOString()
-  });
+// Test endpoint
+app.get('/test', (req, res) => {
+  res.json({ message: 'Test endpoint working!' });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  res.status(404).json({ message: 'Route not found', path: req.originalUrl });
 });
 
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server avviato sulla porta ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌐 Access: http://0.0.0.0:${PORT}`);
 });
