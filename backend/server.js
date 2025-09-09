@@ -12,28 +12,45 @@ console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
 
 const app = express();
 
-// CORS configuration
+// CORS configuration - Permissiva per Netlify
 const corsOptions = {
   origin: function (origin, callback) {
-    // Permetti richieste senza origin (es. app mobile)
-    if (!origin) return callback(null, true);
+    console.log('🌐 CORS check for origin:', origin);
     
-    // In development permetti localhost
+    // Permetti richieste senza origin (es. app mobile, Postman)
+    if (!origin) {
+      console.log('✅ No origin - allowing');
+      return callback(null, true);
+    }
+    
+    // In development permetti tutto
     if (process.env.NODE_ENV !== 'production') {
+      console.log('✅ Development mode - allowing all');
       return callback(null, true);
     }
     
-    // In production permetti domini specifici o netlify
-    if (origin.includes('netlify.app') || 
-        origin.includes('fantaschedina.netlify.app') ||
-        origin.includes('carrubbasamuel.github.io')) {
+    // In production permetti domini Netlify e GitHub
+    const allowedOrigins = [
+      'netlify.app',
+      'fantaschedina.netlify.app', 
+      'carrubbasamuel.github.io',
+      'localhost'
+    ];
+    
+    const isAllowed = allowedOrigins.some(domain => origin.includes(domain));
+    
+    if (isAllowed) {
+      console.log('✅ Origin allowed:', origin);
       return callback(null, true);
     }
     
+    console.log('❌ Origin blocked:', origin);
     callback(new Error('Non autorizzato da CORS'));
   },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 // Middleware
