@@ -161,6 +161,11 @@ export const adminAPI = {
   deleteUser: async (userId: string): Promise<void> => {
     await api.delete(`/admin/users/${userId}`);
   },
+
+  approveUser: async (userId: string): Promise<User> => {
+    const response = await api.put(`/admin/users/${userId}/approve`);
+    return response.data;
+  },
 };
 
 export default api;

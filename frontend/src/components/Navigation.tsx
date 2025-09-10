@@ -10,10 +10,10 @@ const Navigation: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <Navbar bg="dark" variant="dark" expand="lg" className="shadow-md">
       <Container>
-        <Navbar.Brand as={Link} to="/">
-          ⚽ Fantaschedine
+        <Navbar.Brand as={Link} to="/" className="fw-bold">
+          Fantaschedine
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -47,7 +47,7 @@ const Navigation: React.FC = () => {
                   to="/schedule"
                   className={isActive('/schedule') ? 'active' : ''}
                 >
-                  📅 Calendario
+                  Calendario
                 </Nav.Link>
                 <Nav.Link 
                   as={Link} 
@@ -64,7 +64,7 @@ const Navigation: React.FC = () => {
                       className={isActive('/admin') ? 'active' : ''}
                       style={{ color: '#ffc107' }}
                     >
-                      🔧 Pannello Admin
+                      Pannello Admin
                     </Nav.Link>
                     <Nav.Link 
                       as={Link} 
@@ -72,7 +72,7 @@ const Navigation: React.FC = () => {
                       className={isActive('/gameday-management') ? 'active' : ''}
                       style={{ color: '#ffc107' }}
                     >
-                      ⚽ Gestione Giornate
+                      Gestione Giornate
                     </Nav.Link>
                   </>
                 )}
