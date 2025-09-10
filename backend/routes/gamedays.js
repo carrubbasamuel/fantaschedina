@@ -69,6 +69,28 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// Reset e reinizializza tutte le giornate
+router.post('/reset-season', auth, async (req, res) => {
+  try {
+    // Verifica se l'utente è admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Accesso negato' });
+    }
+
+    // Cancella tutte le giornate esistenti
+    await Gameday.deleteMany({});
+    
+    // Cancella tutte le partite esistenti
+    const Match = require('../models/Match');
+    await Match.deleteMany({});
+
+    res.json({ message: 'Stagione resettata con successo. Ora puoi reinizializzare.' });
+  } catch (error) {
+    console.error('Errore nel reset della stagione:', error);
+    res.status(500).json({ message: 'Errore interno del server' });
+  }
+});
+
 // Inizializza tutte le giornate del campionato
 router.post('/initialize-season', auth, async (req, res) => {
   try {
