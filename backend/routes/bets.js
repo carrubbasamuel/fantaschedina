@@ -173,4 +173,33 @@ router.get('/leaderboard', async (req, res) => {
   }
 });
 
+// Ottieni tutte le scommesse per una giornata specifica
+router.get('/all/:gamedayId', auth, async (req, res) => {
+  try {
+    const { gamedayId } = req.params;
+
+    // Verifica che la giornata esista
+    const gameday = await Gameday.findById(gamedayId);
+    if (!gameday) {
+      return res.status(404).json({ message: 'Giornata non trovata' });
+    }
+
+    // Ottieni tutte le scommesse per questa giornata con i dati degli utenti
+    const bets = await Bet.find({ gameday: gamedayId })
+      .populate({
+        path: 'user',
+        populate: {
+          path: 'team'
+        }
+      })
+      .populate('gameday')
+      .sort({ createdAt: 1 });
+
+    res.json(bets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Errore del server' });
+  }
+});
+
 module.exports = router;
