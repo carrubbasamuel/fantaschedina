@@ -5,6 +5,7 @@ import Navigation from './components/Navigation';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AdminPanel from './pages/AdminPanel';
 import Dashboard from './pages/Dashboard';
+import GamedayManagement from './pages/GamedayManagement';
 import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import Login from './pages/Login';
@@ -12,7 +13,6 @@ import MyBets from './pages/MyBets';
 import NewBet from './pages/NewBet';
 import Register from './pages/Register';
 import Schedule from './pages/Schedule';
-import GamedayManagement from './pages/GamedayManagement';
 
 // Componente per proteggere le route
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
