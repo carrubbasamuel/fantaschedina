@@ -79,6 +79,11 @@ export const gamedaysAPI = {
     return response.data;
   },
 
+  resetSeason: async (): Promise<{ message: string }> => {
+    const response = await api.post('/gamedays/reset-season');
+    return response.data;
+  },
+
   closeBetting: async (id: string): Promise<Gameday> => {
     const response = await api.put(`/gamedays/${id}/close-betting`);
     return response.data;

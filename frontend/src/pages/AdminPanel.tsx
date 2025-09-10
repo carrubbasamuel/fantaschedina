@@ -59,6 +59,24 @@ const AdminPanel: React.FC = () => {
     }
   };
 
+  const handleResetSeason = async () => {
+    if (!window.confirm('ATTENZIONE: Questa operazione cancellerà TUTTE le giornate e partite esistenti. Sei sicuro di voler continuare?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await gamedaysAPI.resetSeason();
+      setSeasonInitialized(false);
+      setError('');
+      alert(`Successo! ${result.message}`);
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Errore nel reset della stagione');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAssignTeam = (user: User) => {
     setSelectedUser(user);
     setSelectedTeam('');
@@ -153,6 +171,20 @@ const AdminPanel: React.FC = () => {
                             ? "Tutte le giornate sono state create con successo" 
                             : "Crea tutte le 35 giornate dalla 3ª alla 38ª di Serie A"
                           }
+                        </small>
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <div className="d-grid">
+                        <Button 
+                          variant="warning"
+                          disabled={loading}
+                          onClick={handleResetSeason}
+                        >
+                          🔄 Reset Stagione
+                        </Button>
+                        <small className="text-muted mt-1">
+                          Cancella tutte le giornate e partite per ricominciare
                         </small>
                       </div>
                     </Col>
